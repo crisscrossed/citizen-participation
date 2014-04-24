@@ -1,0 +1,15 @@
+- title @page.title
+- published_class
+
+.shape.page.show
+  .row
+    .large-9.columns
+      %h1
+        = @page.title
+    .large-3.columns
+      - if can? :edit, @page
+        = link_to "Bearbeiten", edit_page_path(@page), :class => 'button radius secondary round edit'
+      -# if can? :destroy, @page
+        = link_to 'Löschen', @page, :confirm => "Sind Sie sich sicher?", :method => :delete, :class => 'button radius delete'
+  %p
+    = @page.content.html_safe

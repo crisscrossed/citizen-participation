@@ -1,0 +1,48 @@
+
+.row
+  .large-4.medium-5.small-12.columns
+    %p.project
+      %a{href: "http://www.aachener-stiftung.de", :target => "_blank"} 
+        Ein Projekt der Aachener Stiftung Kathy Beys
+
+  .large-6.medium-6.small-12.small-offset-0.medium-offset-1.large-offset-2.columns
+    %ul.links
+      %li
+        = link_to "Kontakt", static_path('kontakt')
+      %li
+        = link_to "Impressum", static_path('impressum')
+      %li
+        %a{href: "http://creativecommons.org/licenses/by-nc-sa/3.0/de/", :target => "_blank"} CC-Lizenz
+      %li
+        = link_to "Datenschutz", static_path('datenschutz')
+
+#login-window.reveal-modal.small{"data-reveal" => ""}
+  %h2
+    Anmelden
+  = form_for(User.new, :url => session_path('user')) do |f|
+    = hidden_field_tag 'modal', '1'
+    .row
+      .small-8.columns
+        E-Mail
+        = f.email_field :email
+    .row
+      .small-8.columns
+        Passwort
+        = f.password_field :password
+    .row.spacetop-20.spacebottom-20
+      .small-8.columns
+        %label{:for => "remember_me"}
+          = f.check_box :remember_me
+          %span.custom.radio
+            Für 2 Wochen speichern
+          %br
+          %br
+    %a.close-reveal-modal
+      X
+
+
+
+    .row
+      .small-10.columns
+        = f.submit "Anmelden", :class => "button radius"
+        = render "devise/shared/links"

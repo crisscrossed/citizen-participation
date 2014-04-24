@@ -1,0 +1,119 @@
+.header
+  .row
+    .large-3.medium-3.small-12.columns.box-center
+      %a{href: "/"}
+        = image_tag('logo.png', alt: "unserac.de logo", :id => "logo")
+    .large-9.medium-9.small-12.columns
+      .row
+        .large-12.medium-12.small-12.columns
+          - if current_user
+            .funktionen
+              %a.button.tiny.radius.dropdown{:style => "margin-top: 5px", "data-dropdown" => "drop"}
+                Funktionen
+              %ul#drop.f-dropdown{"data-dropdown-content" => ""}
+                %li
+                  = link_to t("abmelden"), destroy_user_session_path, :method => :delete, :id => ""
+                %li
+                  = link_to "Einstellungen", edit_user_registration_path
+                %li
+                  = link_to "Mein Profil", profile_path(current_user)
+                %li
+                  = link_to "Neue Initiative", new_initiative_path
+                %li
+                  = link_to "Neue Veranstaltung", new_neuigkeiten_path
+                %li
+                  = link_to "E-Mail Abos", edit_user_registration_path
+                - if can? :create, Antraege
+                  %li
+                    %hr
+                  %li
+                    = link_to "Neue Vorlage", new_antraege_path
+                -# if can? :create, Banner
+                  %li
+                    = link_to "Neues Banner-Bild", new_banner_path
+                  %li
+                    = link_to "Alle Banner-Bilder", banners_path
+                - if can? :manage_users, User
+                  %li
+                    = link_to "Nutzer verwalten", manage_users_path
+                  %li
+                    = link_to "Widgets verwalten", widgets_path
+          .nav
+            .social
+              = link_to "https://twitter.com/Unser_AC", target: "_blank" do
+                %span.icon-twitter
+              = link_to "https://www.facebook.com/pages/Unserac/172309742956332", target: "_blank" do
+                %span.icon-facebook
+            %ul
+              %li
+                = link_to "Blog", "http://blog.unserac.de", target: "_blank"
+              %li
+                = link_to "Das Projekt", static_path('das-projekt'), :class => add_active_class('pages', 'show', 'slug', "das-projekt")
+              %li
+                = link_to "Presse", static_path('presse'), :class => add_active_class('pages', 'show', 'slug', "presse")
+              %li
+                = link_to "Videohilfe", static_path('videohilfe'), :class => add_active_class('pages', 'show', 'slug', "videohilfe")
+              %li
+                = link_to "Regeln", static_path('regeln'), :class => add_active_class('pages', 'show', 'slug', "regeln")
+              %li
+                = link_to "Mach mit!", static_path('mach-mit'), :class => add_active_class('pages', 'show', 'slug', "mach-mit")
+              - if !current_user
+                %li
+                  = link_to "Anmelden", '#', "data-reveal-id" => "login-window", id: "log-in"
+              - else
+                %li
+                  = link_to current_user.username, profile_path(current_user)
+
+      .row
+        .large-12.medium-12.columns
+          .select-ort
+            .dein-ort
+              Dein Ort
+            = select_tag 'pages_kommunen', options_from_collection_for_select(all_kommune, 'id', 'name', @selected_kommune), class: 'chosen-kommune', include_blank: true, data: { optional: true, placeholder: 'Ort auswählen' }
+            = select_tag 'pages_quarters', options_from_collection_for_select(@quarters || all_quarters, 'id', 'name', @selected_quarter), class: 'chosen', include_blank: true, data: { optional: true, placeholder: 'Ortsteil auswählen'}
+
+
+          = form_tag search_path, method: :get, :id => "search", :class => "different" do
+            = text_field_tag 'q', nil, :placeholder => "Suchen", :id => "search-field"
+            = submit_tag '', :id => "search-button"
+
+.baner.other
+  - if params[:controller] == "pages" &&  params[:action] == "start"
+    .row
+      .large-12.columns
+        .row
+          .large-8.medium-8.columns
+            %h1.title-baner
+              %span es gibt nichts gutes, außer
+              %span
+                %em MAN
+                TUT ES
+          .large-3.large-offset-1.medium-4.columns
+            %span.bubble.show-for-medium-up.fjalla
+              Du bist man.
+              %br>/
+              Also ran!
+            = link_to image_tag('stiftung.png', alt: "Aachener Kathy Beys Stiftung", :id => "stiftung", :class => "show-for-large-up"), 'http://www.aachener-stiftung.de', :target => "_blank"
+
+  .row
+    .large-12.overflow-box.columns
+      = link_to initiatives_path, :class => "box-point first" do
+        = image_tag('icon-point1.png', alt: "Initiativen", :class => "icon-point")
+        %span.title-point Initiativen
+        %span
+          Lerne die neuesten Initiativen kennen und starte Deine eigene!
+      = link_to antraeges_path, :class => "box-point" do
+        = image_tag('icon-point2.png', alt: "Anträge", :class => "icon-point")
+        %span.title-point.vorlage Rats-Infos
+        %span
+          Die neuesten Infos aus der Politik - für Deine direkte Umgebung
+      = link_to constructions_path, :class => "box-point" do
+        = image_tag('icon-point3.png', alt: "Baustellen", :class => "icon-point")
+        %span.title-point.baustelle Baustellen
+        %span
+          Erfahre, wo und warum in Deiner Nähe Baustellen den Verkehr behindern.
+      = link_to neuigkeitens_path, :class => "box-point" do
+        = image_tag('icon-point4.png', alt: "Veranstaltungen", :class => "icon-point")
+        %span.title-point.veranstaltung Veranstaltungen
+        %span
+          Von Ausstellung bis Zirkus - was ist los in der StädteRegion?

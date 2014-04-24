@@ -1,0 +1,9 @@
+= form_for([commentable, Comment.new()], :html => {:class => 'comment' }) do |f|
+  - unless current_user
+    = f.text_field :user_name, :placeholder => "Name"
+    = f.text_field :user_email, :placeholder => "E-Mail"
+  = f.text_area :content, :class => 'smaller-textarea', :placeholder => "Kommentar hinzufügen"
+  .submit
+  - if !current_user
+    = recaptcha_tags
+  = f.submit "Speichern", :class => 'button radius'

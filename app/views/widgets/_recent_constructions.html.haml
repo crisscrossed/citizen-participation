@@ -1,0 +1,19 @@
+.holder-list.construction.fifth
+  %h3.title.fifth Baustellen
+
+  - if @constructions.present?
+    %ul
+      - @constructions.limit(3).each do |construction|
+        %li
+          = link_to construction_path(construction) do
+            %span
+              = construction.city
+            %br/
+            #{l construction.start_date, :format => :short} - #{l construction.end_date, :format => :short}
+            %br
+            = truncate(construction.title, :length => 50, :omission => '...')
+  - else
+    %ul
+      %li
+        Keine Baustellen
+  = link_to "Alle Baustellen", constructions_path, :class => "alle"

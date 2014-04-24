@@ -1,0 +1,35 @@
+= title "Suchergebnis: " + params[:q] if params[:q]
+%h1
+  Suchergebnis
+
+.row
+  .large-12.columns
+    = form_tag search_path, method: :get, :class => "" do
+      .row
+        .large-7.columns
+          = text_field_tag 'q', params[:q]
+        .large-5.columns.left
+          = submit_tag 'Suchen', :class => "button radius medium", :style => ""
+
+.row
+  .large-8.columns
+    - if @results.present?
+      - @results.each do |result|
+        .shape
+          %h2{:style => "font-size: 22px;"}
+            = link_to truncate(result.title, length: 220), result
+          - if result.content?
+            %p
+              = sanitize(truncate_html(result.content.html_safe, length: 200), tags: %w(br p))
+    - else
+      %h4
+        Leider kein Treffer.
+  .large-4.columns
+    = link_to 'Stichwort abonnieren', new_search_subscription_path(query: params[:q]), class: 'button radius'
+    .shape
+      %p
+        %b
+          Per E-Mail über neue Inhalte zu dem Thema informiert werden.
+
+
+= paginate @results

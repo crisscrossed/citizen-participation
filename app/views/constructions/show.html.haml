@@ -1,0 +1,42 @@
+- title @construction.title
+- published_class
+
+.row
+  .large-8.columns
+    #content
+      .row
+        .large-10.columns
+          %h1
+            = @construction.title
+        .large-2.columns
+          = render 'initiatives/social_media_buttons', url: @construction
+      %p
+        = l @construction.start_date, :format => :short
+        bis
+        = l @construction.end_date, :format => :short
+      %p
+        = @construction.content.try(:html_safe)
+
+  .large-4.columns
+    - if can? :edit, @construction
+      = link_to "Bearbeiten", edit_construction_path(@construction), :class => 'button radius secondary edit'
+    - if can? :destroy, @construction
+      = link_to @construction, :confirm => "Sind Sie sich sicher?", :method => :delete, :class => 'button radius delete' do
+        Löschen
+    #map{:style => "width: auto; height: 350px; border: 1px solid #ccc;"}
+    = render 'widgets/start_initiative'
+
+- if @construction
+  = content_for :footer do
+    :javascript
+      var map = new L.Map('map').setView(new L.LatLng(#{@construction.lat}, #{@construction.long}), 17);
+      var mapboxUrl = 'http://{s}.tiles.mapbox.com/v3/okf.map-najwtvl1/{z}/{x}/{y}.png',
+          mapbox = new L.TileLayer(mapboxUrl, {"attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors"});
+      map.addLayer(mapbox,true);
+      map.scrollWheelZoom.disable();
+      L.Icon.Default.imagePath = '/assets';
+
+    %script{ :type => 'text/javascript' }
+      - if @construction.lat.present?
+        var conIcon = L.AwesomeMarkers.icon({icon: 'baustelle', color: 'orange'});
+        marker = L.marker([#{@construction.lat}, #{@construction.long}], { icon: conIcon }).addTo(map);

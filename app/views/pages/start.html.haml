@@ -1,0 +1,28 @@
+- title "Start"
+
+.large-8.medium-8.columns
+  .shape.filter
+    %form{:method => :get, :action => markers_path}
+      .row
+        .large-4.columns
+          .filter-quartiere
+            = content_tag 'div', '', data: { kommunen: @kommunen }, style: 'display:none'
+            = select_tag 'kommunen', options_from_collection_for_select(@kommunen, 'id', 'name'), class: 'chosen', include_blank: true, data: { optional: true, placeholder: 'Ort auswählen' }
+        .large-4.columns
+          .filter-quartiere
+            = content_tag 'div', '', data: { quarters: @quarters_id_to_location }, style: 'display:none'
+            = select_tag 'quarters', options_from_collection_for_select(@quarters, 'id', 'name'), class: 'chosen', include_blank: true, data: { optional: true, placeholder: 'Ortsteil auswählen' }
+        .large-4.columns
+          .filter-quartiere
+            = select_tag 'streets', options_from_collection_for_select(@streets, 'coordinates', 'name'), class: 'chosen', include_blank: true, data: { optional: true, placeholder: 'Strasse auswählen' }
+  .box-center
+    #map.start-page{:style => "width: auto; height: 450; border: 1px solid #ccc;", :data => { initiatives: @initiativen.to_json, antraeges: @antraeges.to_json, constructions: @constructions.to_json }}
+    #spinner
+
+  #seitenverweis
+
+.large-4.medium-4.columns
+  = render 'widgets/recent_initiatives'
+  = render 'widgets/start_initiative'
+
+= render 'initiatives/markers', initiatives: @initiativen

@@ -1,0 +1,16 @@
+.holder-list.fourth
+  %h3.title.fourth Rats-Infos
+  - if @antraeges.present?
+    %ul
+      - @antraeges.recent.each do |antraege|
+        %li
+          = link_to antraege_path(antraege) do
+            %span
+              = antraege.kommune
+            %br/
+            = truncate(antraege.title, :length => 80, :omission => '...')
+  - else
+    %ul
+      %li
+        Keine Rats-Infos
+  = link_to "Alle Rats-Infos", antraeges_path, :class => "alle"

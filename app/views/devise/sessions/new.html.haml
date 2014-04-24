@@ -1,0 +1,27 @@
+- title "Anmelden"
+
+.row
+  .large-8.large-offset-4.columns.shape
+    %h1
+      Anmelden
+    = form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => { :id => 'login-form' }) do |f|
+      .row
+        .large-12.columns
+          E-Mail
+          = f.email_field :email
+      .row
+        .large-12.columns
+          Passwort
+          = f.password_field :password
+      .row
+        .large-12.columns
+          %label{:for => "remember_me"}
+            = f.check_box :remember_me
+            %span.custom.radio
+              Für 2 Wochen speichern
+            %br
+            %br
+      .row
+        .large-12.columns
+          = f.submit "Anmelden", :class => "button radius"
+          = render "devise/shared/links"

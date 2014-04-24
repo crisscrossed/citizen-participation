@@ -1,0 +1,33 @@
+- title "Veranstaltungen"
+- published_class
+
+%h1 Veranstaltungen
+
+%h3
+  Diese Seite befindet sich noch im Aufbau.
+
+-# @neuigkeiten.each do |neuigkeit|
+  .wrapper-content
+    .first-part
+    .wrapper-main
+      .box1
+        %span.date
+          - if neuigkeit.datum
+            = neuigkeit.datum.strftime('%d.%m.%Y')
+          %span
+            Aachen
+        %h3.heading-post
+          = link_to neuigkeit.title, neuigkeiten_path(neuigkeit), :class => ("ini_event" if neuigkeit.initiative_id)
+          - if neuigkeit.initiative_id
+            .label.round.secondary
+              Initiative
+        %p
+          = neuigkeit.description.try(:html_safe)
+      .box2
+        .social
+          %span.icon-facebook-squared
+          %span.icon-twitter-squared
+        = link_to "ansehen", neuigkeiten_path(neuigkeit)
+
+-#= paginate @neuigkeiten
+

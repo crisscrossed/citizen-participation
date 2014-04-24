@@ -1,0 +1,6 @@
+= javascript_include_tag "application"
+:javascript
+  $(document).foundation();
+  $('a.login-window').foundation('reveal');
+= yield(:footer)
+= yield(:inline_js)

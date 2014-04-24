@@ -1,0 +1,19 @@
+#widget.shape.grey
+  %h4
+    %span.icon-wrench.icon.red
+    Aktive Initiativen
+  %ul.no-bullet
+    - Initiative.active.each do |initiative|
+      %li
+        -#= link_to image_tag(avatar_url(initiative.user, 25), alt: initiative.user.username, width: "25", height: "25"), profile_path(initiative.user)
+        - if initiative.user
+          - if current_user
+            = link_to initiative.user.username, profile_path(initiative.user)
+          - else
+            initiative.user.username
+          |
+        = truncate(initiative.title, :length => 80, :omission => '...')
+        -#= truncate(initiative.content, :length => 60, :omission => '...').html_safe
+        = link_to "mehr", initiative_path(initiative)
+  = link_to "mehr Initiativen", initiatives_path
+

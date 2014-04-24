@@ -1,0 +1,49 @@
+= title @antraege.title
+= published_class
+
+.row.antraege.show
+  .large-8.columns
+    #content
+      .row
+        .large-10.columns
+          %h1
+            = @antraege.kommune
+        .large-2.columns
+          = render 'initiatives/social_media_buttons', url: @antraege
+      %h2
+        = @antraege.title
+      - if @antraege.last_updated
+        %p
+          = l @antraege.last_updated, :format => :short
+      - if @antraege.verfasser
+        %p
+          Verantwortlich:
+          = @antraege.verfasser
+      - if @antraege.link
+        %p
+          = link_to 'Original Webseite', @antraege.link, :target => "_blank"
+      %p
+        = sanitize(@antraege.content.html_safe, tags: %w(table tr td th tbody p br b ul lu ol i a))
+  .large-4.columns
+    - if can? :edit, @antraege
+      = link_to "Bearbeiten", edit_antraege_path(@antraege), :class => 'button radius secondary edit'
+    - if can? :destroy, @antraege
+      = link_to @antraege, :confirm => "Sind Sie sich sicher?", :method => :delete, :class => 'button radius delete' do
+        Löschen
+    - if @antraege.lat.present?
+      #map{:style => "width: auto; height: 350px; border: 1px solid #ccc;"}
+    = render 'widgets/start_initiative'
+
+- if @antraege.lat.present?
+  = content_for :footer do
+    :javascript
+      var map = new L.Map('map').setView(new L.LatLng(#{@antraege.lat}, #{@antraege.long}), 17);
+      var mapboxUrl = 'http://{s}.tiles.mapbox.com/v3/okf.map-najwtvl1/{z}/{x}/{y}.png',
+          mapbox = new L.TileLayer(mapboxUrl, {"attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors"});
+      map.addLayer(mapbox,true);
+      map.scrollWheelZoom.disable();
+      L.Icon.Default.imagePath = '/assets';
+
+    %script{ :type => 'text/javascript' }
+      var antraegeIcon = L.AwesomeMarkers.icon({icon: 'info', color: 'blue'});
+      marker = L.marker([#{@antraege.lat}, #{@antraege.long}], { icon: antraegeIcon }).addTo(map);

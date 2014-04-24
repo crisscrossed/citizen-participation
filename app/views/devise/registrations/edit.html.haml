@@ -1,0 +1,251 @@
+= title "Meine Profildaten ändern"
+
+.row#einstellungen
+  .large-4.columns
+    .shape
+      %h2.name-box
+        Meine Profildaten ändern
+
+      = form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :method => :put }) do |f|
+        = devise_error_messages!
+        .row.spacetop
+          .large-8.columns
+            %h3.form
+              Benutzername
+          .large-4.columns
+            .pull-right
+              .label.round.secondary
+                Öffentlich
+        = f.text_field :username
+
+        .row
+          .large-8.columns
+            %h3.form
+              Jahrgang
+          .large-4.columns
+            .pull-right
+              .label.round.secondary
+                Privat
+        .jahrgang{:style => "margin-bottom: 20px;"}
+          = select_year(Time.new(resource.jahrgang.to_i), :start_year => Time.now.year, :end_year => Time.now.year - 95, :field_name => 'jahrgang', :prefix => :user)
+
+        .row
+          .large-12.columns
+            %h3.form
+              Foto
+            = image_tag(avatar_url(f.object, 150), width: 150, height: 150, :class => 'avatar user-photo')
+            %br
+            = f.check_box :remove_avatar
+            Foto löschen
+            %p
+              %br
+              = f.file_field :avatar, :class => 'input-file'
+
+        .row
+          .large-6.columns
+            %h3.form
+              Passwort
+          .large-6.columns
+        = f.password_field :password, :autocomplete => "off"
+        %label
+          %h3.form
+            Passwort bestätigen
+        = f.password_field :password_confirmation
+        .row
+          .large-8.columns
+            %h3.form
+              E-Mail
+          .large-4.columns
+            .label.round.pull-right
+              Geschützt
+        = f.email_field :email
+        .row
+          .large-8.columns
+            %h3.form
+              Orte
+            = f.hidden_field :kommune_name
+          .large-4.columns
+            .label.round.secondary.pull-right
+              Öffentlich
+        = f.select :kommune, options_from_collection_for_select(@kommunen, 'id', 'name', resource.kommune), class: 'chosen', include_blank: true, data: { optional: true, placeholder: 'Ort auswählen' }
+        .row
+          .large-8.columns
+            %h3.form
+              Ortsteil
+          .large-4.columns
+            = check_box_tag 'user[public_fields][]', 'ortsteil_name', @user.public_fields.include?('ortsteil_name')
+            .label.round.secondary
+              Öffentlich
+        = f.select :ortsteil, options_from_collection_for_select(@quarters, 'id', 'name', resource.ortsteil), { include_blank: true }, class: 'chosen', data: { optional: true, placeholder: 'Ortsteil auswählen' }
+        %br
+        %br
+        %br
+        %br
+        .row
+          .large-8.columns
+            %h3.form
+              Verein
+          .large-4.columns
+            .pull-right
+              = check_box_tag 'user[public_fields][]', 'verein', @user.public_fields.include?('verein')
+              .label.round.secondary
+                Öffentlich
+        = f.text_field :verein
+        .row
+          .large-8.columns
+            %h3.form
+              Partei
+          .large-4.columns
+            .pull-right
+              = check_box_tag 'user[public_fields][]', 'partei', @user.public_fields.include?('partei')
+              .label.round.secondary
+                Öffentlich
+        = f.text_field :partei
+        .row
+          .large-8.columns
+            %h3.form
+              Politisches Amt
+          .large-4.columns
+            .pull-right
+              = check_box_tag 'user[public_fields][]', 'polit_amt', @user.public_fields.include?('polit_amt')
+              .label.round.secondary
+                Öffentlich
+        = f.text_field :polit_amt
+        .row
+          .large-8.columns
+            %h3.form
+              Verwaltung
+          .large-4.columns
+            .pull-right
+              = check_box_tag 'user[public_fields][]', 'verwaltung', @user.public_fields.include?('verwaltung')
+              .label.round.secondary
+                Öffentlich
+        = f.text_field :verwaltung
+        .row
+          .large-6.columns
+            = f.submit "Speichern", :class => "button radius"
+  .large-4.columns
+    .shape
+      %h2.name-box
+        Meine Aktivitäten verwalten
+      %p.info-list
+        Hier geben wir Dir einen Überblick über Deine Aktivitäten auf unserAC.de.
+        Du findest alle Deine Initiativen auf einen Blick und kannst sie veröffentlichen oder verbergen.
+      %p.info-list
+        Außerdem listen wir Dir die Initiativen auf, mit denen Du sympathisierst.
+        Zuletzt findest Du eine Aufstellung aller Deiner Kommentare zu anderen Initiativen, Baustellen oder Informationen aus den Räten der Kommunen der Region Aachen.
+      %h3
+        Meine Initiativen
+      - if @user.initiatives.present?
+        %ul.circle
+          - @user.initiatives.each do |initiative|
+            %li
+              = link_to initiative.title, initiative_path(initiative)
+              - if initiative.visible != true
+                .label.round.alert
+                  Nicht veröffentlicht
+              -#%i.icon-comments
+                = initiative.comments.count
+              -#%i.icon-thumbs-up
+                = initiative.supporters.count
+      - else
+        %p.info-list
+          Noch keine Initiativen
+      %h3.form
+        Initiativen, die ich unterstütze
+      - if @user.sympathies.present?
+        %ul.circle
+          - @user.sympathies.each do |supported|
+            %li
+              = link_to supported.initiative.title, initiative_path(supported.initiative)
+      - else
+        %p.info-list
+          Noch keine Unterstützung
+      %h3.form
+        Meine Kommentare
+      - if @user.comments.present?
+        %ul.circle
+          - @user.comments.each do |comment|
+            %li
+              = link_to(truncate(comment.content, :lenght => 50), url_for(comment.commentable))
+      - else
+        %p.info-list
+          Noch keine Kommentare
+  .large-4.columns
+    .shape
+      %h2.name-box
+        Meine E-Mail Abos
+      %p.info-list
+        Du bekommst immer eine Email, wenn es Veränderungen auf unserAC.de gibt, die
+        Deine Suchworte oder ausgewählten Initiativen betreffen.
+
+      %h3.form
+        Themen
+      - if @subscriptions.present?
+        - @subscriptions.each do |subscription|
+          .row{'data-search-subscription-id' => subscription.id}
+            .large-12.columns
+              = link_to 'Löschen', subscription, :method => :delete, :class => "button radius", :remote => true
+              .label.secondary
+                Suchabfrage:
+                = subscription.query
+              %hr
+      - else
+        %p.info-list
+          Noch kein Themen-Abo
+
+      %h3.form
+        Initiativen
+      - if @subscriptions_iniatives
+        - @subscriptions_iniatives.each do |subscription_iniatives|
+          .row
+            .large-6.columns
+              .label.secondary
+                = truncate(subscription_iniatives.subscribable.title, length: 26)
+              - @initiative = subscription_iniatives.subscribable
+              - @subscribed = true
+            .large-6.columns
+              = render 'initiatives/subscribe_button'
+            %hr
+      - else
+        %p.info-list
+          Noch keine Initiativen-Abo
+
+      %h3.form
+        Ortsteil-Abo
+      - if @quarter_subscriptions.present?
+        - @quarter_subscriptions.each do |quarter|
+          .row
+            .large-6.columns
+              .label.secondary
+                = quarter.name
+              - @quarter_id = quarter.id
+              - @subscribed = true
+            .large-6.columns
+              = render 'quarters/subscribe_button'
+            %hr
+      - else
+        %p.info-list
+          Noch kein Ortsteil-Abo
+
+= content_for :inline_js do
+  :javascript
+    $(document).ready(function() {
+      $('#user_kommune').change(function () {
+        $('#user_kommune_name').val($(this).find(':selected').text());
+        $.get('/kommunen/' + $(this).val() + '/quartiere', function(data) {
+          var $quarters = $('#user_ortsteil');
+          console.log($quarters);
+          $quarters.empty();
+          $quarters.val('');
+          for(var i = 0; i < data.length; i++) {
+            $quarters.append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
+          }
+          $quarters.val('').trigger('chosen:updated');
+        });
+      });
+    });
+    $(document).on('ajax:before', 'div[data-subscribe-id] form', function () {
+      $(this).closest('div').attr('data-subscribe-id', null);
+      $(this).closest('.row').slideUp();
+    });

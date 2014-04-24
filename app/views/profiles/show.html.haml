@@ -1,0 +1,39 @@
+= title @user.username
+.row
+  .large-12.mediun-12.columns
+    .box-center.profile-box
+      .about-profile
+        %h2.name-box
+          - if current_user == @user
+            Dein Profil
+          - else
+            Profil von
+            = @user.username
+        %p
+          - if current_user == @user
+            Hallo
+            = @user.username
+            %br
+            Willkommen auf unserAC.de
+
+        %dl.data-user
+          - @user.fields_visible_to(current_user).each do |name|
+            - if @user.public_send(name).present?
+              %dt
+                #{t(name)}:
+              %dd
+                = @user.public_send(name)
+          -# if @user.kommune.present? && !@user.kommune.nil?
+            %dt
+              Ort:
+            %dd
+              = Kommune.find(@user.kommune).name
+        - if current_user == @user
+          = link_to "Profil ändern", edit_user_registration_path, :class => "button secondary radius"
+        - if current_user == @user
+          = link_to "E-Mail Abos", edit_user_registration_path, :class => "button secondary radius"
+      %div
+        = image_tag(avatar_url(@user, 150), alt: @user.username,  width: 150, height: 150, :class => "avatar", id: "photo-profil")
+        - if current_user.moderator? or current_user.admin? or current_user.superadmin?
+          %p
+            = link_to "Hinweise Nutzer", note_profile_path(@user), :class => "button radius"

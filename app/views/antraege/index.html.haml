@@ -1,0 +1,61 @@
+= title "Rats-Infos"
+= published_class
+
+
+.row
+  .large-12.columns
+    - @antraeges.each do |antraege|
+      .wrapper-content
+        .first-part
+        .wrapper-main
+          .box1
+            %span.date
+              - if antraege.last_updated
+                = l antraege.last_updated, :format => :short
+              %span
+                = antraege.kommune
+
+            %h3.heading-post
+              = link_to truncate(antraege.title, length: 70), antraege_path(antraege)
+            %p
+              = sanitize(truncate_html(antraege.content.html_safe, length: 200), tags: %w(br p))
+          .box2
+            .social
+              %span.icon-facebook-squared
+              %span.icon-twitter-squared
+            = link_to "ansehen", antraege_path(antraege)
+            - if can? :edit, antraege
+              - if antraege.lat
+                .label.round.secondary
+                  Manueller Ort
+              - else
+                .label.round.secondary
+                  Kein manueller Ort
+              - if antraege.check == true
+                .label.round
+                  Geprüft
+
+= paginate @antraeges
+
+= content_for :footer do
+  %script{ :type => 'text/javascript' }
+    function initialize() {
+    map = new L.Map('map').setView(new L.LatLng(#{@map_lat}, #{@map_lng}), #{@map_zoom});
+    var mapboxUrl = 'http://{s}.tiles.mapbox.com/v3/okf.map-najwtvl1/{z}/{x}/{y}.png',
+    mapbox = new L.TileLayer(mapboxUrl, {"attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors"});
+    L.Icon.Default.imagePath = '/assets';
+    map.addLayer(mapbox,true);
+    map.scrollWheelZoom.disable();
+    var icon = L.AwesomeMarkers.icon({icon: 'info', color: 'blue'});
+    markers = []
+    - i = 0
+    - @antraeges_map.each do |antraege|
+      - i += 1
+      - if antraege.lat.present?
+        marker#{i} = L.marker([#{antraege.lat}, #{antraege.long}], { icon: icon }).addTo(map);
+        marker#{i}.bindPopup('<b>#{link_to antraege.title, antraege_path(antraege)}</b><br>#{escape_javascript(truncate_html(antraege.content.html_safe, :length => 50))}#{link_to 'Zur Rats-Info', antraege_path(antraege)}');
+        markers.push(marker#{i});
+    }
+    $(document).ready(function() {
+    initialize();
+    });

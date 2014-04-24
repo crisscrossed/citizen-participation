@@ -1,0 +1,10 @@
+.holder-list
+  %h3.title.second Veranstaltungen
+  %ul
+    - Neuigkeiten.recent.each do |neuigkeit|
+      %li
+        = link_to neuigkeiten_path(neuigkeit) do
+          %span Aachen
+          %br/
+          = truncate(neuigkeit.title, :length => 50, :omission => '...')
+    = link_to "Alle Veranstaltungen", neuigkeitens_path, :class => "alle"

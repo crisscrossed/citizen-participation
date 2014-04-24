@@ -1,0 +1,11 @@
+Hallo!,
+\
+Dies ist eine Nachricht zu folgender Initiative:
+\
+#{@initiative.title}
+\
+Initiator: #{@anfrager.username} (#{@anfrager.email}) hat Dir folgende Nachricht geschrieben:
+\
+= @message
+\
+= render "/initiativen_mailer/signatur"

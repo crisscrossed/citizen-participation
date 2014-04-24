@@ -1,0 +1,35 @@
+.shape.comments
+  .row
+    .large-2.medium-1.columns
+      - if comment.user
+        = link_to image_tag(avatar_url(comment.user, 50), alt: comment.user.username, width: "50", height: "50", :class => "avatar"), profile_path(comment.user)
+      - else
+        = image_tag('avatar-50.png', alt: "Avatar" , :class => "avatar")
+    .large-10.medium-11.columns.comment-large
+      .row{:style => "margin-top: 10px;"}
+        .large-7.columns
+          %p
+            Beigetragen von
+            - if comment.user.present?
+              - if current_user
+                = link_to comment.user.username, profile_path(comment.user), :class => "fjalla"
+              - else
+                = link_to comment.user.username, '#', "data-reveal-id" => "login-window"
+            - else
+              = comment.user_name
+            - if comment.user.present? && comment.user.kommune_name.present?
+              (#{comment.user.kommune_name})
+        .large-2.columns
+          %p
+            = l comment.created_at, :format => :short
+        .large-3.columns
+          .pull-right
+            - if can? :destroy, Comment
+              = link_to 'Löschen', url_for([comment.commentable, comment]), :method => :delete, :class => "button tiny secondary radius", :data => { :confirm => 'Sind Sie sich sicher?' }
+        %a{:name => comment.id.to_s}
+      .row{:style => ""}
+        .large-12.columns
+          .comment-content
+            %p
+              = auto_link(sanitize(comment.content.gsub(/\n/, '<br />'),  tags: %w(br)), :all, :target => "_blank")
+

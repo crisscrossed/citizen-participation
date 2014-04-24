@@ -1,0 +1,164 @@
+= title @initiative.title
+= published_class
+
+.row.initiative.show
+  .large-8.columns
+    .shape
+      %h1{:style => "color: #414144"}
+        = @initiative.title
+    %ul.small-block-grid-4
+      - for foto in @initiative.fotos
+        %li
+          = link_to image_tag(foto.file_url(:thumb).to_s, width: 125, height: 125, :class => 'avatar'), foto.file_url(:lightbox).to_s, :class => "th radius colorbox"
+    .shape
+      .row
+        .large-10.columns
+          .creator-image
+            - if @initiative.user.present?
+              = link_to image_tag(avatar_url(@initiative.user, 50), alt: @initiative.user.username, width: "50", height: "50", class: "avatar"), profile_path(@initiative.user)
+          .creator-text
+            Eine Initiative von
+            %br
+            - if @initiative.user.present?
+              - if current_user
+                #{link_to @initiative.user.username, profile_path(@initiative.user)}
+              - else
+                = @initiative.user.username
+              - if @initiative.user.kommune_name.present?
+                (#{@initiative.user.kommune_name})
+          - if @initiative.visible != true
+            .right
+              .label.round.alert
+                Initiative nicht veröffentlicht
+        .large-2.columns
+          = render 'initiatives/social_media_buttons', url: @initiative
+
+      .content-frame
+        %h3
+          Worum geht's?
+        %p.content
+          = sanitize(auto_link(@initiative.content.html_safe, :all, :target => "_blank"), tags: %w(p b i ul ol li u a blockquote))
+        %h3
+          Was willst Du erreichen?
+        %p.content
+          - if @initiative.erreicht.present? 
+            = sanitize(auto_link(@initiative.erreicht.html_safe, :all, :target => "_blank"), tags: %w(p b i ul ol li u a blockquote))
+          - else
+            Nichts
+        %h3
+          Was hast Du bereits getan?
+        %p.content
+          - if @initiative.getan.present?
+            = sanitize(auto_link(@initiative.getan.html_safe, :all, :target => "_blank"), tags: %w(p b i ul ol li u a blockquote))
+          - else
+            Nichts
+        .row
+          .large-6.columns
+            - if current_user && current_user != @initiative.user
+              = render 'subscribe_button'
+            - if current_user && (current_user != @initiative.user)
+              = link_to 'Initiator kontaktieren', contact_initiative_path(@initiative), :class => 'button radius'
+            - if current_user == @initiative.user
+              = link_to 'Moderator kontaktieren', contact_moderator_initiative_path(@initiative), :class => 'button radius'
+          .large-6.columns
+            - if can? :edit, @initiative
+              - if can? :edit, @initiative
+                = link_to "Bearbeiten", edit_initiative_path(@initiative), :class => 'button radius'
+              - if can? :destroy, @initiative
+                = link_to @initiative, :confirm => "Sind Sie sich sicher?", :method => :delete, :class => 'button radius delete' do
+                  Löschen
+    .shape
+      = render :partial => "comments/form", :locals => {:commentable => @initiative}
+
+    - if @comments.present?
+      %h2
+        #{pluralize(@initiative.comments.count(:id), "Kommentar")}
+
+      = nested_messages @comments if @comments
+
+  .large-4.columns
+    - if @initiative.lat?
+      #map{:style => "width: auto; height: 350px; border: 1px solid #ccc;"}
+
+    .holder-list.second
+      %h3.title.second
+        Veranstaltungen
+      - if @initiative.neuigkeitens.exists?
+        %ul
+          - @initiative.neuigkeitens.each do |neuigkeit|
+            %li
+              = link_to neuigkeiten_path(neuigkeit) do
+                = l neuigkeit.datum, :format => :short if neuigkeit.datum
+                = truncate(neuigkeit.title, :length => 100, :omission => '...')
+      - else
+        .pad
+          %p
+            Noch keine Veranstaltungen.
+
+      - if can? :edit, @initiative
+        .pad
+          = link_to "Veranstaltung einfügen", new_neuigkeiten_path(initiative_id: @initiative.id), :class => "button secondary tiny radius"
+
+    .holder-list.second.infos
+      %h3.title.second{:style => "background-color: #9a2e2e"}
+        Infos
+      .pad
+        .row
+          .large-5.small-5.medium-5.columns
+            %p
+              Kategorie
+          .large-7.small-7.medium-7.columns
+            - @initiative.categories.each do |cat|
+              = cat.name
+        .row
+          .large-5.small-5.medium-5.columns
+            %p
+              Ort
+          .large-7.small-7.medium-7.columns
+            = @initiative.kommune_feld
+        .row
+          .large-5.small-5.medium-5.columns
+            Start
+          .large-7.small-7.medium-7.columns
+            = l @initiative.created_at, :format => :short
+        .row
+          .large-5.small-5.medium-5.columns
+            aktualisiert
+          .large-7.small-7.medium-7.columns
+            = l @initiative.updated_at, :format => :short
+
+    - if current_user != @initiative.user
+      = render 'support_button'
+
+    .supporters.second
+      %h3.title.second{:style => "background-color: #414144"}
+        Unterstützer
+        (#{@initiative.supporters.count})
+      - if @initiative.supporters.exists?
+        %ul#supporter
+          - @initiative.supporters.each do |supporter|
+            %li{:class => "support-#{supporter.user.id}"}
+              = link_to image_tag(avatar_url(supporter.user, 50), alt: supporter.user.username, width: "50", height: "50", :class => "avatar-support avatar"), profile_path(supporter.user)
+              %span.supporter
+                = link_to supporter.user.username, profile_path(supporter.user)
+              - if supporter.user.kommune_name.present?
+                (#{supporter.user.kommune_name})
+
+      - else
+        %ul#supporter
+
+- if @initiative.lat?
+  = content_for :footer do
+    :javascript
+      var map = new L.Map('map').setView(new L.LatLng(#{@initiative.lat}, #{@initiative.long}), 17);
+
+      var mapboxUrl = 'http://{s}.tiles.mapbox.com/v3/okf.map-najwtvl1/{z}/{x}/{y}.png',
+          mapbox = new L.TileLayer(mapboxUrl, {"attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/\" target=\"_blank\">OpenStreetMap</a> contributors"});
+      map.addLayer(mapbox,true);
+      map.scrollWheelZoom.disable();
+
+    %script{ :type => 'text/javascript' }
+      - if @initiative.lat.present?
+        var initiativeIcon = L.AwesomeMarkers.icon({icon: 'initiative', color: 'red'});
+        marker = L.marker([#{@initiative.lat}, #{@initiative.long}], { icon: initiativeIcon }).addTo(map);
+

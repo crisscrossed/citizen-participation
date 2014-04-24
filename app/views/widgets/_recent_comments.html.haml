@@ -1,0 +1,21 @@
+#widget.shape.grey
+  %h4
+    %span.icon-bullseye.icon.turkis
+    Neue Kommentare
+  %ul.no-bullet
+    - get_recent_comments.each do |comment|
+      - next if (comment.commentable_type == 'Initiative') && (!comment.commentable.visible)
+      %li
+        - if comment.user
+          -#= link_to image_tag(avatar_url(comment.user, 25), alt: comment.user.username, width: "25", height: "25"), profile_path(comment.user)
+          - if current_user
+            = link_to comment.user.username, profile_path(comment.user)
+          - else
+            = comment.user.username
+          |
+        - if comment.content
+          = truncate(comment.content, :length => 50, :omission => '...').html_safe
+        - if comment.commentable_type == 'Initiative'
+          = link_to "mehr", initiative_path(comment.commentable.id)
+        - if comment.commentable_type == 'Antraege'
+          = link_to "mehr", antraege_path(comment.commentable.id)

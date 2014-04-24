@@ -1,0 +1,10 @@
+%head
+  %meta{:charset => "utf-8"}/
+  %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}/
+  %meta{content: "IE=9", "http-equiv" => "X-UA-Compatible"}/
+  %title
+    #{APP[:name]} -
+    = content_for?(:title) ? yield(:title) : ""
+  = stylesheet_link_tag "application", :media => "all"
+  %link{href: "http://fonts.googleapis.com/css?family=Fjalla+One", rel: "stylesheet", type: "text/css"}/
+  = csrf_meta_tags

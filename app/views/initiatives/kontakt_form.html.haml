@@ -1,0 +1,16 @@
+= title "Nachricht an den Initiator der Initiative"
+
+.shape
+  .row
+    .large-10.columns
+      %h1
+        Nachricht an den Initiator der Initiative
+
+      %p
+        Hier kannst Du eine Nachricht an den Initiator der Initiative schicken. Dein Benutzername und Deine E-Mail Adresse erscheint automatisch in der gesendeten E-Mail.
+
+
+      = form_for 'message', :url => contact_initiative_path(@initiative), :html => { :method => :post, :class => "" } do |f|
+        = f.text_area :body
+
+        = f.submit 'Senden', :class => "button radius"

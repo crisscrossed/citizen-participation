@@ -1,0 +1,10 @@
+- if current_user
+  = link_to new_initiative_path, :class => "start" do
+    Jetzt eigene
+    %br>/
+    Initiative starten!
+- else
+  = link_to '#', "data-reveal-id" => "login-window", class: "start" do
+    Jetzt eigene
+    %br>/
+    Initiative starten!
